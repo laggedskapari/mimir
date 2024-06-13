@@ -46,9 +46,13 @@ func main() {
   //
   // fmt.Printf("%v %.2f %v %q\n", smsSendingLimit, costPerSMS, hasPermission, username)
 
-  messageStart := "Happy birthday! you are now"
-  age := 21
-  messageEnd := "years old"
+  // messageStart := "Happy birthday! you are now"
+  // age := 21
+  // messageEnd := "years old"
+  //
+  // fmt.Printf("%s %v %s\n", messageStart, age, messageEnd)
 
-  fmt.Printf("%s %v %s\n", messageStart, age, messageEnd)
+  penniesPerText := 2.00
+
+  fmt.Printf("The type of penniesPerText is %T\n", penniesPerText)
 }
