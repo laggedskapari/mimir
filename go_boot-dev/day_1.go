@@ -52,7 +52,11 @@ func main() {
   //
   // fmt.Printf("%s %v %s\n", messageStart, age, messageEnd)
 
-  penniesPerText := 2.00
+  // penniesPerText := 2.00
+  //
+  // fmt.Printf("The type of penniesPerText is %T\n", penniesPerText)
 
-  fmt.Printf("The type of penniesPerText is %T\n", penniesPerText)
+  averageOpenRate, displayMessage := .23, "is you average open rate of your messages"
+
+  fmt.Println(averageOpenRate, displayMessage)
 }
