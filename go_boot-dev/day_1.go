@@ -26,9 +26,19 @@ import "fmt"
 //   fmt.Println("the compiled textio server is starting")
 // }
 
-func main() {
-  var username string = "presidentSkroob"
-  var password string = "12345"
+// func main() {
+//   var username string = "presidentSkroob"
+//   var password string = "12345"
+//
+//   fmt.Println("Authentication: Basic", username+":"+password)
+// }
 
-  fmt.Println("Authentication: Basic", username+":"+password)
+func main() {
+	var startup string = "Textio SMS service booting up..."
+	var message string = "Sending text message"
+	var confirm string = "Message sent!"
+
+	fmt.Println(confirm)
+	fmt.Println(message)
+	fmt.Println(startup)
 }
