@@ -71,9 +71,15 @@ func main() {
   // fmt.Println("Premium plan : ", preminumPlanName)
   // fmt.Println("Basic plan : ", basicPlanName)
 
-  const secondsInMinute = 60
-  const minutesInHour = 60
-  const secondsInHour = secondsInMinute * minutesInHour
+  // const secondsInMinute = 60
+  // const minutesInHour = 60
+  // const secondsInHour = secondsInMinute * minutesInHour
+  //
+  // fmt.Println(secondsInHour)
 
-  fmt.Println(secondsInHour)
+  const name = "Saul Goodman"
+  const openRate = 30.5
+
+  msg := fmt.Sprintf("Hi %s, your open rate is %.1f percent\n", name, openRate)
+  fmt.Print(msg)
 }
