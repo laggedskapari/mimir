@@ -60,8 +60,20 @@ func main() {
   //
   // fmt.Println(averageOpenRate, displayMessage)
 
-  accountAge := 2.6
-  accountAgeInt := int(accountAge)
+  // accountAge := 2.6
+  // accountAgeInt := int(accountAge)
+  //
+  // fmt.Println("Your account has existed for", accountAgeInt, "years")
 
-  fmt.Println("Your account has existed for", accountAgeInt, "years")
+  // const preminumPlanName = "Premium Plan"
+  // const basicPlanName = "Basic Plan"
+  //
+  // fmt.Println("Premium plan : ", preminumPlanName)
+  // fmt.Println("Basic plan : ", basicPlanName)
+
+  const secondsInMinute = 60
+  const minutesInHour = 60
+  const secondsInHour = secondsInMinute * minutesInHour
+
+  fmt.Println(secondsInHour)
 }
