@@ -39,10 +39,16 @@ func main() {
 	//
 	//	  fmt.Printf("%s to %s: %s\n", senderName, recipient, message);
 
-  var smsSendingLimit int
-  var costPerSMS float64
-  var hasPermission bool
-  var username string
+  // var smsSendingLimit int
+  // var costPerSMS float64
+  // var hasPermission bool
+  // var username string
+  //
+  // fmt.Printf("%v %.2f %v %q\n", smsSendingLimit, costPerSMS, hasPermission, username)
 
-  fmt.Printf("%v %.2f %v %q\n", smsSendingLimit, costPerSMS, hasPermission, username)
+  messageStart := "Happy birthday! you are now"
+  age := 21
+  messageEnd := "years old"
+
+  fmt.Printf("%s %v %s\n", messageStart, age, messageEnd)
 }
