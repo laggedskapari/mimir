@@ -56,7 +56,12 @@ func main() {
   //
   // fmt.Printf("The type of penniesPerText is %T\n", penniesPerText)
 
-  averageOpenRate, displayMessage := .23, "is you average open rate of your messages"
+  // averageOpenRate, displayMessage := .23, "is you average open rate of your messages"
+  //
+  // fmt.Println(averageOpenRate, displayMessage)
 
-  fmt.Println(averageOpenRate, displayMessage)
+  accountAge := 2.6
+  accountAgeInt := int(accountAge)
+
+  fmt.Println("Your account has existed for", accountAgeInt, "years")
 }
