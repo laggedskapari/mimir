@@ -22,6 +22,13 @@ import "fmt"
 //   fmt.Printf("Doris spent %.2f on text messages today \n", totalCost)
 // }
 
+// func main() {
+//   fmt.Println("the compiled textio server is starting")
+// }
+
 func main() {
-  fmt.Println("the compiled textio server is starting")
+  var username string = "presidentSkroob"
+  var password string = "12345"
+
+  fmt.Println("Authentication: Basic", username+":"+password)
 }
