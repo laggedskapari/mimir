@@ -39,47 +39,56 @@ func main() {
 	//
 	//	  fmt.Printf("%s to %s: %s\n", senderName, recipient, message);
 
-  // var smsSendingLimit int
-  // var costPerSMS float64
-  // var hasPermission bool
-  // var username string
-  //
-  // fmt.Printf("%v %.2f %v %q\n", smsSendingLimit, costPerSMS, hasPermission, username)
+	// var smsSendingLimit int
+	// var costPerSMS float64
+	// var hasPermission bool
+	// var username string
+	//
+	// fmt.Printf("%v %.2f %v %q\n", smsSendingLimit, costPerSMS, hasPermission, username)
 
-  // messageStart := "Happy birthday! you are now"
-  // age := 21
-  // messageEnd := "years old"
-  //
-  // fmt.Printf("%s %v %s\n", messageStart, age, messageEnd)
+	// messageStart := "Happy birthday! you are now"
+	// age := 21
+	// messageEnd := "years old"
+	//
+	// fmt.Printf("%s %v %s\n", messageStart, age, messageEnd)
 
-  // penniesPerText := 2.00
-  //
-  // fmt.Printf("The type of penniesPerText is %T\n", penniesPerText)
+	// penniesPerText := 2.00
+	//
+	// fmt.Printf("The type of penniesPerText is %T\n", penniesPerText)
 
-  // averageOpenRate, displayMessage := .23, "is you average open rate of your messages"
-  //
-  // fmt.Println(averageOpenRate, displayMessage)
+	// averageOpenRate, displayMessage := .23, "is you average open rate of your messages"
+	//
+	// fmt.Println(averageOpenRate, displayMessage)
 
-  // accountAge := 2.6
-  // accountAgeInt := int(accountAge)
-  //
-  // fmt.Println("Your account has existed for", accountAgeInt, "years")
+	// accountAge := 2.6
+	// accountAgeInt := int(accountAge)
+	//
+	// fmt.Println("Your account has existed for", accountAgeInt, "years")
 
-  // const preminumPlanName = "Premium Plan"
-  // const basicPlanName = "Basic Plan"
-  //
-  // fmt.Println("Premium plan : ", preminumPlanName)
-  // fmt.Println("Basic plan : ", basicPlanName)
+	// const preminumPlanName = "Premium Plan"
+	// const basicPlanName = "Basic Plan"
+	//
+	// fmt.Println("Premium plan : ", preminumPlanName)
+	// fmt.Println("Basic plan : ", basicPlanName)
 
-  // const secondsInMinute = 60
-  // const minutesInHour = 60
-  // const secondsInHour = secondsInMinute * minutesInHour
-  //
-  // fmt.Println(secondsInHour)
+	// const secondsInMinute = 60
+	// const minutesInHour = 60
+	// const secondsInHour = secondsInMinute * minutesInHour
+	//
+	// fmt.Println(secondsInHour)
 
-  const name = "Saul Goodman"
-  const openRate = 30.5
+	// const name = "Saul Goodman"
+	// const openRate = 30.5
+	//
+	// msg := fmt.Sprintf("Hi %s, your open rate is %.1f percent\n", name, openRate)
+  // fmt.Println("Hello %s", "Rajat")
+  messageLen := 10
+  maxMessageLen := 20
+  fmt.Println("Trying to send a message length: ", messageLen, "and a max length of :", maxMessageLen)
 
-  msg := fmt.Sprintf("Hi %s, your open rate is %.1f percent\n", name, openRate)
-  fmt.Print(msg)
+  if messageLen <= maxMessageLen {
+    fmt.Println("Message Sent!")
+  } else {
+    fmt.Print("Message not sent")
+  }
 }
