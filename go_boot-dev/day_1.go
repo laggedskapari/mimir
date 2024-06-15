@@ -82,13 +82,23 @@ func main() {
 	//
 	// msg := fmt.Sprintf("Hi %s, your open rate is %.1f percent\n", name, openRate)
   // fmt.Println("Hello %s", "Rajat")
-  messageLen := 10
-  maxMessageLen := 20
-  fmt.Println("Trying to send a message length: ", messageLen, "and a max length of :", maxMessageLen)
+  // messageLen := 10
+  // maxMessageLen := 20
+  // fmt.Println("Trying to send a message length: ", messageLen, "and a max length of :", maxMessageLen)
+  //
+  // if messageLen <= maxMessageLen {
+  //   fmt.Println("Message Sent!")
+  // } else {
+  //   fmt.Print("Message not sent")
+  // }
+  fname := "Dalinar"
+  lname := "Kholin"
+  age := 45
+  messageRate := 0.5
+  isSubscribed := false
+  message := "Sometimes a hypocrite is nothing more than a in the process of changing."
 
-  if messageLen <= maxMessageLen {
-    fmt.Println("Message Sent!")
-  } else {
-    fmt.Print("Message not sent")
-  }
+  userLog := fmt.Sprintf("Name: %s %s, Age: %d, Rate: %.2f, isSubscribed: %t, Message: %s", fname, lname, age, messageRate, isSubscribed, message)
+
+  fmt.Print(userLog)
 }
