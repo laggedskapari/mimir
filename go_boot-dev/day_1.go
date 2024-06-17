@@ -1,8 +1,8 @@
-package main
-
-import "fmt"
-
-func main() {
+// package main
+//
+// import "fmt"
+//
+// func main() {
 	//   fmt.Println("Hello World!")
 
 	//   messagesFromDoris := []string {
@@ -91,14 +91,21 @@ func main() {
   // } else {
   //   fmt.Print("Message not sent")
   // }
-  fname := "Dalinar"
-  lname := "Kholin"
-  age := 45
-  messageRate := 0.5
-  isSubscribed := false
-  message := "Sometimes a hypocrite is nothing more than a in the process of changing."
-
-  userLog := fmt.Sprintf("Name: %s %s, Age: %d, Rate: %.2f, isSubscribed: %t, Message: %s", fname, lname, age, messageRate, isSubscribed, message)
-
-  fmt.Print(userLog)
-}
+  // fname := "Dalinar"
+  // lname := "Kholin"
+  // age := 45
+  // messageRate := 0.5
+  // isSubscribed := false
+  // message := "Sometimes a hypocrite is nothing more than a in the process of changing."
+  //
+  // userLog := fmt.Sprintf("Name: %s %s, Age: %d, Rate: %.2f, isSubscribed: %t, Message: %s", fname, lname, age, messageRate, isSubscribed, message)
+  //
+  // fmt.Print(userLog)
+//   var insufficientFundMessage string = "Purchase failed, Insufficient Funds."
+//   var purchaseSuccessMessage string = "Purchase successful."
+//   var accountBalance float64 = 100.0
+//   var bulkMessageCost float64 = 75.0
+//   var isPremiumUser bool = true
+//   var discountRate float64 = 0.10
+//   var finalCost float64 = bulkMessageCost
+// }
