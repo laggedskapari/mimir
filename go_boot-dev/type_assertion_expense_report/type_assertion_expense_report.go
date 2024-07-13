@@ -1,15 +1,23 @@
 package main
 
 func getExpenseReport(e expense) (string, float64) {
-	emailEx, isEmail := e.(email)
-	if isEmail {
-		return emailEx.toAddress, emailEx.cost()
+	// emailEx, isEmail := e.(email)
+	// if isEmail {
+	// 	return emailEx.toAddress, emailEx.cost()
+	// }
+	// smsEx, isSms := e.(sms)
+	// if isSms {
+	// 	return smsEx.toPhoneNumber, smsEx.cost()
+	// }
+	// return "", 0.0
+	switch eXpense := e.(type) {
+	case email:
+		return eXpense.toAddress, eXpense.cost()
+	case sms:
+		return eXpense.toPhoneNumber, eXpense.cost()
+	default:
+		return "", 0.0
 	}
-	smsEx, isSms := e.(sms)
-	if isSms {
-		return smsEx.toPhoneNumber, smsEx.cost()
-	}
-	return "", 0.0
 }
 
 // don't touch below this line
