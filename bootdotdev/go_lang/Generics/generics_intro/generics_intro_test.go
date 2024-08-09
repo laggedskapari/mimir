@@ -28,7 +28,6 @@ func Test(t *testing.T) {
 			false,
 		)
 	}
-
 }
 
 func test[T comparable](t *testing.T, s []T, expected T) {
