@@ -1,5 +1,3 @@
-module go_boot-dev/array_append
+module bootdotdev/go_lang
 
 go 1.22.4
-
-require github.com/wagslane/go-tinytime v0.0.2
