@@ -82,4 +82,20 @@ int main(int argc, char *argv[]) {
     }
     return 0;
   }
+  if (TREEWALK_FILEEXT(userArg)) {
+    if (strlen(argv[3]) > 0) {
+      int result = nftw(argv[3], fileExtCallback, 20, flag);
+      if (result != 0) {
+        perror("nftw");
+        return 1;
+      }
+    } else {
+      int result = nftw(".", fileExtCallback, 20, flag);
+      if (result != 0) {
+        perror("nftw");
+        return 1;
+      }
+    }
+    return 0;
+  }
 }
