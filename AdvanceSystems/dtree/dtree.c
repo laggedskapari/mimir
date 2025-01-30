@@ -67,6 +67,14 @@ static int directoryCountCallback(const char *filePath, const struct stat *sb,
   return 0;
 }
 
+static int fileSizeCallback(const char *filePath, const struct stat *sb,
+                            int typeFlag, struct FTW *buff) {
+  if (typeFlag == FTW_F) {
+    printf("[%llu B] - %s\n", (unsigned long long)sb->st_size, filePath);
+  }
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
   int flag = FTW_PHYS;
   if (argc < 2) {
@@ -153,6 +161,23 @@ int main(int argc, char *argv[]) {
     } else {
       int result = nftw(".", directoryCountCallback, 20, flag);
       if (result < 0) {
+        perror("nftw");
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  if (TREEWALK_FILESIZE(userArg)) {
+    if (strlen(argv[3]) > 0) {
+      int result = nftw(argv[3], fileSizeCallback, 20, flag);
+      if (result < 0) {
+        perror("nftw");
+        return 1;
+      }
+    } else {
+      int result = nftw(".", fileSizeCallback, 20, flag);
+      if (result != 0) {
         perror("nftw");
         return 1;
       }
