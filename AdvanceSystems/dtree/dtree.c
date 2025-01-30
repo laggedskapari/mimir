@@ -12,6 +12,8 @@
 #define TREEWALK_DELFILEEXT(userArg) (strcmp(userArg, "-del") == 0)
 
 const char *targetExtension = NULL;
+static int fileCount = 0;
+static int directoryCount = 0;
 
 static int treeWalkCallback(const char *filePath, const struct stat *sb,
                             int typeFlag, struct FTW *buff) {
@@ -53,11 +55,16 @@ static int fileExtCallback(const char *filePath, const struct stat *sb,
 
 static int fileCountCallback(const char *filePath, const struct stat *sb,
                              int typeFlag, struct FTW *buff) {
-  int count = 0;
-  if (typeFlag == FTW_F) {
-    ++count;
-  }
-  return count;
+  if (typeFlag == FTW_F)
+    ++fileCount;
+  return 0;
+}
+
+static int directoryCountCallback(const char *filePath, const struct stat *sb,
+                                  int typeFlag, struct FTW *buff) {
+  if (typeFlag == FTW_D)
+    ++directoryCount;
+  return 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -115,20 +122,40 @@ int main(int argc, char *argv[]) {
   }
 
   if (TREEWALK_FILECOUNT(userArg)) {
+    fileCount = 0;
     if (strlen(argv[3]) > 0) {
       int result = nftw(argv[3], fileCountCallback, 20, flag);
       if (result < 0) {
         perror("nftw");
         return 1;
       }
-      printf("Total Files: %d", result);
+      printf("Total Files: %d\n", fileCount);
     } else {
       int result = nftw(".", fileCountCallback, 20, flag);
       if (result < 0) {
         perror("nftw");
         return 1;
       }
-      printf("Total Files: %d", result);
+      printf("Total Files: %d\n", fileCount);
+    }
+    return 0;
+  }
+
+  if (TREEWALK_DIRCOUNT(userArg)) {
+    directoryCount = 0;
+    if (strlen(argv[3]) > 0) {
+      int result = nftw(argv[3], directoryCountCallback, 20, flag);
+      if (result < 0) {
+        perror("nftw");
+        return 1;
+      }
+      printf("Total Directories: %d\n", directoryCount);
+    } else {
+      int result = nftw(".", directoryCountCallback, 20, flag);
+      if (result < 0) {
+        perror("nftw");
+        return 1;
+      }
     }
     return 0;
   }
