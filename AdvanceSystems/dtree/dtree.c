@@ -51,6 +51,15 @@ static int fileExtCallback(const char *filePath, const struct stat *sb,
   return 0;
 }
 
+static int fileCountCallback(const char *filePath, const struct stat *sb,
+                             int typeFlag, struct FTW *buff) {
+  int count = 0;
+  if (typeFlag == FTW_F) {
+    ++count;
+  }
+  return count;
+}
+
 int main(int argc, char *argv[]) {
   int flag = FTW_PHYS;
   if (argc < 2) {
@@ -101,6 +110,25 @@ int main(int argc, char *argv[]) {
         perror("nftw");
         return 1;
       }
+    }
+    return 0;
+  }
+
+  if (TREEWALK_FILECOUNT(userArg)) {
+    if (strlen(argv[3]) > 0) {
+      int result = nftw(argv[3], fileCountCallback, 20, flag);
+      if (result < 0) {
+        perror("nftw");
+        return 1;
+      }
+      printf("Total Files: %d", result);
+    } else {
+      int result = nftw(".", fileCountCallback, 20, flag);
+      if (result < 0) {
+        perror("nftw");
+        return 1;
+      }
+      printf("Total Files: %d", result);
     }
     return 0;
   }
