@@ -43,8 +43,6 @@ static int fileHasExtention(const char *filename) {
 
 static int fileExtCallback(const char *filePath, const struct stat *sb,
                            int typeFlag, struct FTW *buff) {
-  printf("%s", filePath);
-
   if (typeFlag == FTW_F) {
     if (fileHasExtention(filePath)) {
       printf("%s\n", filePath);
@@ -83,6 +81,14 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   if (TREEWALK_FILEEXT(userArg)) {
+
+    if (argc < 4) {
+      printf("Error: extention argument missing\n");
+      return 1;
+    }
+
+    targetExtension = argv[4];
+
     if (strlen(argv[3]) > 0) {
       int result = nftw(argv[3], fileExtCallback, 20, flag);
       if (result != 0) {
