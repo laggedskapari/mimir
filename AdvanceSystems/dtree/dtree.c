@@ -48,25 +48,34 @@ static void makeDirectories(const char *dir) {
 static int copyFile(const char *source, const char *destination) {
   char buffer[BUFFER_SIZE];
   int sourcefd, destinationfd;
-  size_t readBytes;
+  ssize_t readBytes;
 
+  // Create destination directories
+  char *destCopy = strdup(destination);
+  if (!destCopy) {
+    perror("Memory allocation failed");
+    return -1;
+  }
+  char *dirPath = dirname(destCopy);
+  makeDirectories(dirPath);
+  free(destCopy); // Free after using dirname
+
+  // Open source file
   sourcefd = open(source, O_RDONLY);
   if (sourcefd == -1) {
-    perror("Error: opening sourse file");
+    perror("Error: opening source file");
     return -1;
   }
 
-  char *destinationDirectoryName = dirname(strdup(destination));
-  makeDirectories(destinationDirectoryName);
-  free(destinationDirectoryName);
-
+  // Open destination file
   destinationfd = open(destination, O_WRONLY | O_CREAT | O_TRUNC, 0644);
   if (destinationfd == -1) {
-    printf("Error: failed to open destination file");
+    perror("Error: failed to open destination file");
     close(sourcefd);
     return -1;
   }
 
+  // Copy file contents
   while ((readBytes = read(sourcefd, buffer, BUFFER_SIZE)) > 0) {
     if (write(destinationfd, buffer, readBytes) != readBytes) {
       perror("Error: failed to write into destination file");
@@ -75,9 +84,9 @@ static int copyFile(const char *source, const char *destination) {
       return -1;
     }
   }
+
   close(sourcefd);
   close(destinationfd);
-
   return 0;
 }
 
@@ -149,7 +158,7 @@ static int copyFileCallback(const char *filePath, const struct stat *sb,
   snprintf(destinationPath, sizeof(destinationPath), "%s/%s",
            destinationDirectory, basename(relPath));
   if (typeFlag == FTW_F) {
-    if (fileHasExtention(filePath)) {
+    if (!fileHasExtention(filePath)) {
       printf("copying %s to %s\n", filePath, destinationPath);
       if (copyFile(filePath, destinationPath) == 0) {
         printf("File copied successfully\n");
@@ -269,5 +278,34 @@ int main(int argc, char *argv[]) {
       }
     }
     return 0;
+  }
+
+  if (TREEWALK_DIRCOPY(userArg)) {
+    if (argc < 5) {
+      perror("usage: dtree -cp <source> <destination> <fileExtention> \n");
+      return 1;
+    }
+
+    targetExtension = argv[5];
+
+    const char *sourceDirectory = argv[3];
+    destinationDirectory = argv[4];
+
+    struct stat st;
+    if (stat(sourceDirectory, &st) != 0) {
+      printf("Error: Source directory does not exists\n");
+      return 1;
+    }
+
+    if (strlen(argv[3]) > 0) {
+      int result = nftw(sourceDirectory, copyFileCallback, 20, flag);
+      if (result != 0) {
+        perror("nftw");
+        return 1;
+      }
+      printf("Copy operation is completed: All %s files transferred\n",
+             targetExtension);
+      return 0;
+    }
   }
 }
