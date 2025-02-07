@@ -24,6 +24,7 @@ static int fileCount = 0;
 static int directoryCount = 0;
 static const char *destinationDirectory = NULL;
 static char destinationPath[4096];
+static const char *sourceBase = NULL;
 
 static void makeDirectories(const char *dir) {
   char tmp[2096];
@@ -152,19 +153,33 @@ static int fileSizeCallback(const char *filePath, const struct stat *sb,
 
 static int copyFileCallback(const char *filePath, const struct stat *sb,
                             int typeFlag, struct FTW *buff) {
-  char relPath[4096];
-  strcpy(relPath, filePath);
+  // Calculate relative path from source base
+  const char *relativePath = filePath + strlen(sourceBase);
+  if (*relativePath == '/')
+    relativePath++; // Skip leading slash
 
+  // Construct full destination path
   snprintf(destinationPath, sizeof(destinationPath), "%s/%s",
-           destinationDirectory, basename(relPath));
-  if (typeFlag == FTW_F) {
-    if (!fileHasExtention(filePath)) {
-      printf("copying %s to %s\n", filePath, destinationPath);
-      if (copyFile(filePath, destinationPath) == 0) {
-        printf("File copied successfully\n");
-      } else {
-        printf("Error: failed to copy file\n");
+           destinationDirectory, relativePath);
+
+  if (typeFlag == FTW_D) {
+    // Create directory in destination
+    makeDirectories(destinationPath);
+    printf("Creating directory: %s\n", destinationPath);
+  } else if (typeFlag == FTW_F) {
+    // If extension is specified, check if file should be excluded
+    if (targetExtension != NULL) {
+      if (fileHasExtention(filePath)) {
+        printf("Skipping file (excluded extension): %s\n", filePath);
+        return 0;
       }
+    }
+
+    printf("Copying file: %s to %s\n", filePath, destinationPath);
+    if (copyFile(filePath, destinationPath) == 0) {
+      printf("File copied successfully\n");
+    } else {
+      printf("Error: failed to copy file\n");
     }
   }
   return 0;
@@ -281,31 +296,40 @@ int main(int argc, char *argv[]) {
   }
 
   if (TREEWALK_DIRCOPY(userArg)) {
-    if (argc < 5) {
-      perror("usage: dtree -cp <source> <destination> <fileExtention> \n");
+    if (argc < 4) {
+      printf("Usage: dtree -cp <source> <destination> [file_extension]\n");
       return 1;
     }
-
-    targetExtension = argv[5];
 
     const char *sourceDirectory = argv[3];
     destinationDirectory = argv[4];
+    sourceBase = sourceDirectory; // Store base directory
+
+    // Extension is optional
+    if (argc > 5) {
+      targetExtension = argv[5];
+    } else {
+      targetExtension = NULL; // No extension specified, copy all files
+    }
 
     struct stat st;
     if (stat(sourceDirectory, &st) != 0) {
-      printf("Error: Source directory does not exists\n");
+      printf("Error: Source directory does not exist\n");
       return 1;
     }
 
-    if (strlen(argv[3]) > 0) {
-      int result = nftw(sourceDirectory, copyFileCallback, 20, flag);
-      if (result != 0) {
-        perror("nftw");
-        return 1;
-      }
-      printf("Copy operation is completed: All %s files transferred\n",
-             targetExtension);
-      return 0;
+    int result = nftw(sourceDirectory, copyFileCallback, 20, flag);
+    if (result != 0) {
+      perror("nftw");
+      return 1;
     }
+
+    if (targetExtension) {
+      printf("Copy operation completed: All non-%s files transferred\n",
+             targetExtension);
+    } else {
+      printf("Copy operation completed: All files transferred\n");
+    }
+    return 0;
   }
 }
