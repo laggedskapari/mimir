@@ -185,6 +185,35 @@ static int copyFileCallback(const char *filePath, const struct stat *sb,
   return 0;
 }
 
+static int moveFileCallback(const char *filePath, const struct stat *sb,
+                            int typeFlag, struct FTW *buff) {
+  const char *relativePath = filePath + strlen(sourceBase);
+  if (*relativePath == '/')
+    relativePath++;
+
+  snprintf(destinationPath, sizeof(destinationPath), "%s/%s",
+           destinationDirectory, relativePath);
+
+  if (typeFlag == FTW_D) {
+    makeDirectories(destinationPath);
+    printf("creating directory: %s\n", destinationPath);
+  }
+
+  else if (typeFlag == FTW_F) {
+    printf("Moving files: %s to %s\n", filePath, destinationPath);
+    if (copyFile(filePath, destinationPath) == 0) {
+      if (unlink(filePath) == 0) {
+        printf("File moved successfully\n");
+      } else {
+        perror("Error deleting source file");
+      }
+    } else {
+      printf("Error: failed to move file\n");
+    }
+  }
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
   int flag = FTW_PHYS;
   if (argc < 2) {
@@ -331,5 +360,8 @@ int main(int argc, char *argv[]) {
       printf("Copy operation completed: All files transferred\n");
     }
     return 0;
+  }
+
+  if (TREEWALK_MOVEDIR(userArg)) {
   }
 }
