@@ -376,5 +376,39 @@ int main(int argc, char *argv[]) {
   }
 
   if (TREEWALK_MOVEDIR(userArg)) {
+    if (argc < 4) {
+      printf("Usage: dtree -mv <source> <directory>\n");
+      return 1;
+    }
+
+    const char *sourceDirectory = argv[3];
+    destinationDirectory = argv[4];
+    sourceBase = sourceDirectory;
+
+    struct stat st;
+    if (stat(sourceDirectory, &st) != 0) {
+      printf("Error: Source directory does not exist\n");
+      return 1;
+    }
+    // First, move all files and create directories
+    printf("Moving files from %s to %s\n", sourceDirectory,
+           destinationDirectory);
+    int result = nftw(sourceDirectory, moveFileCallback, 20, flag);
+    if (result != 0) {
+      perror("Error during move operation");
+      return 1;
+    }
+
+    // Then, delete the source directories (in reverse order)
+    printf("Cleaning up source directories...\n");
+    result = nftw(sourceDirectory, deleteDirectoryCallback, 20,
+                  flag | FTW_DEPTH); // FTW_DEPTH for post-order traversal
+    if (result != 0) {
+      perror("Error during cleanup");
+      return 1;
+    }
+
+    printf("Move operation completed successfully\n");
+    return 0;
   }
 }
