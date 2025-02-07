@@ -214,6 +214,19 @@ static int moveFileCallback(const char *filePath, const struct stat *sb,
   return 0;
 }
 
+static int deleteDirectoryCallback(const char *filePath, const struct stat *sb,
+                                   int typeFlag, struct FTW *buff) {
+  if (typeFlag == FTW_DP) {
+    if (rmdir(filePath) == 0) {
+      printf("removed directory: %s\n", filePath);
+    } else {
+      printf("failed to remove the directory\n");
+    }
+  }
+
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
   int flag = FTW_PHYS;
   if (argc < 2) {
