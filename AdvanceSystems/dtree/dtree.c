@@ -91,6 +91,13 @@ static int copyFile(const char *source, const char *destination) {
   return 0;
 }
 
+static int fileHasExtention(const char *filename) {
+  const char *dot = strrchr(filename, '.');
+  if (!dot || dot == filename)
+    return 0;
+  return strcmp(dot, targetExtension) == 0;
+}
+
 static int treeWalkCallback(const char *filePath, const struct stat *sb,
                             int typeFlag, struct FTW *buff) {
   printf("%s - ", filePath);
@@ -110,13 +117,6 @@ static int treeWalkCallback(const char *filePath, const struct stat *sb,
     break;
   }
   return 0;
-}
-
-static int fileHasExtention(const char *filename) {
-  const char *dot = strrchr(filename, '.');
-  if (!dot || dot == filename)
-    return 0;
-  return strcmp(dot, targetExtension) == 0;
 }
 
 static int fileExtCallback(const char *filePath, const struct stat *sb,
@@ -244,219 +244,195 @@ static int deleteFileCallback(const char *filePath, const struct stat *sb,
 
 int main(int argc, char *argv[]) {
   int flag = FTW_PHYS;
+  int result;
+
+  // Basic argument validation
   if (argc < 2) {
-    printf("Error: not enough argumen\n");
-    return 0;
-  };
+    fprintf(stderr, "Usage: dtree <command> [arguments]\n");
+    fprintf(stderr, "Commands: -ls, -ext, -fc, -dc, -fs, -cp, -mv, -del\n");
+    return EXIT_FAILURE;
+  }
 
   if (strcmp(argv[1], "dtree") != 0) {
-    printf("Error: %s is not found or valid command\n", argv[1]);
-    return 0;
+    fprintf(stderr, "Error: Program must be invoked as 'dtree'\n");
+    return EXIT_FAILURE;
   }
 
-  char const *userArg = argv[2];
+  if (argc < 3) {
+    fprintf(stderr, "Error: No command specified\n");
+    return EXIT_FAILURE;
+  }
+
+  const char *userArg = argv[2];
+  const char *directory = (argc > 3 && strlen(argv[3]) > 0) ? argv[3] : ".";
+
+  // List files and directories
   if (TREEWALK(userArg)) {
-    if (strlen(argv[3]) > 0) {
-      int result = nftw(argv[3], treeWalkCallback, 20, flag);
-      if (result != 0) {
-        perror("nftw");
-        return 1;
-      }
-    } else {
-      int result = nftw(".", treeWalkCallback, 20, flag);
-      if (result != 0) {
-        perror("nftw");
-        return 1;
-      }
+    result = nftw(directory, treeWalkCallback, 20, flag);
+    if (result != 0) {
+      perror("Error traversing directory");
+      return EXIT_FAILURE;
     }
-    return 0;
+    return EXIT_SUCCESS;
   }
+
+  // Find files by extension
   if (TREEWALK_FILEEXT(userArg)) {
-
-    if (argc < 4) {
-      printf("Error: extention argument missing\n");
-      return 1;
+    if (argc < 5) {
+      fprintf(stderr, "Usage: dtree -ext <directory> <extension>\n");
+      return EXIT_FAILURE;
     }
-
     targetExtension = argv[4];
-
-    if (strlen(argv[3]) > 0) {
-      int result = nftw(argv[3], fileExtCallback, 20, flag);
-      if (result != 0) {
-        perror("nftw");
-        return 1;
-      }
-    } else {
-      int result = nftw(".", fileExtCallback, 20, flag);
-      if (result != 0) {
-        perror("nftw");
-        return 1;
-      }
+    if (targetExtension[0] != '.') {
+      fprintf(stderr, "Error: Extension must start with '.'\n");
+      return EXIT_FAILURE;
     }
-    return 0;
+
+    result = nftw(directory, fileExtCallback, 20, flag);
+    if (result != 0) {
+      perror("Error searching for files");
+      return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
   }
 
+  // Count files
   if (TREEWALK_FILECOUNT(userArg)) {
     fileCount = 0;
-    if (strlen(argv[3]) > 0) {
-      int result = nftw(argv[3], fileCountCallback, 20, flag);
-      if (result < 0) {
-        perror("nftw");
-        return 1;
-      }
-      printf("Total Files: %d\n", fileCount);
-    } else {
-      int result = nftw(".", fileCountCallback, 20, flag);
-      if (result < 0) {
-        perror("nftw");
-        return 1;
-      }
-      printf("Total Files: %d\n", fileCount);
+    result = nftw(directory, fileCountCallback, 20, flag);
+    if (result != 0) {
+      perror("Error counting files");
+      return EXIT_FAILURE;
     }
-    return 0;
+    printf("Total Files: %d\n", fileCount);
+    return EXIT_SUCCESS;
   }
 
+  // Count directories
   if (TREEWALK_DIRCOUNT(userArg)) {
     directoryCount = 0;
-    if (strlen(argv[3]) > 0) {
-      int result = nftw(argv[3], directoryCountCallback, 20, flag);
-      if (result < 0) {
-        perror("nftw");
-        return 1;
-      }
-      printf("Total Directories: %d\n", directoryCount);
-    } else {
-      int result = nftw(".", directoryCountCallback, 20, flag);
-      if (result < 0) {
-        perror("nftw");
-        return 1;
-      }
-    }
-    return 0;
-  }
-
-  if (TREEWALK_FILESIZE(userArg)) {
-    if (strlen(argv[3]) > 0) {
-      int result = nftw(argv[3], fileSizeCallback, 20, flag);
-      if (result < 0) {
-        perror("nftw");
-        return 1;
-      }
-    } else {
-      int result = nftw(".", fileSizeCallback, 20, flag);
-      if (result != 0) {
-        perror("nftw");
-        return 1;
-      }
-    }
-    return 0;
-  }
-
-  if (TREEWALK_DIRCOPY(userArg)) {
-    if (argc < 4) {
-      printf("Usage: dtree -cp <source> <destination> [file_extension]\n");
-      return 1;
-    }
-
-    const char *sourceDirectory = argv[3];
-    destinationDirectory = argv[4];
-    sourceBase = sourceDirectory; // Store base directory
-
-    // Extension is optional
-    if (argc > 5) {
-      targetExtension = argv[5];
-    } else {
-      targetExtension = NULL; // No extension specified, copy all files
-    }
-
-    struct stat st;
-    if (stat(sourceDirectory, &st) != 0) {
-      printf("Error: Source directory does not exist\n");
-      return 1;
-    }
-
-    int result = nftw(sourceDirectory, copyFileCallback, 20, flag);
+    result = nftw(directory, directoryCountCallback, 20, flag);
     if (result != 0) {
-      perror("nftw");
-      return 1;
+      perror("Error counting directories");
+      return EXIT_FAILURE;
     }
-
-    if (targetExtension) {
-      printf("Copy operation completed: All non-%s files transferred\n",
-             targetExtension);
-    } else {
-      printf("Copy operation completed: All files transferred\n");
-    }
-    return 0;
+    printf("Total Directories: %d\n", directoryCount);
+    return EXIT_SUCCESS;
   }
 
-  if (TREEWALK_MOVEDIR(userArg)) {
-    if (argc < 4) {
-      printf("Usage: dtree -mv <source> <directory>\n");
-      return 1;
+  // Show file sizes
+  if (TREEWALK_FILESIZE(userArg)) {
+    result = nftw(directory, fileSizeCallback, 20, flag);
+    if (result != 0) {
+      perror("Error getting file sizes");
+      return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+  }
+
+  // Copy directory
+  if (TREEWALK_DIRCOPY(userArg)) {
+    if (argc < 5) {
+      fprintf(stderr, "Usage: dtree -cp <source> <destination> [extension]\n");
+      return EXIT_FAILURE;
     }
 
-    const char *sourceDirectory = argv[3];
+    sourceBase = argv[3];
     destinationDirectory = argv[4];
-    sourceBase = sourceDirectory;
+    targetExtension = (argc > 5) ? argv[5] : NULL;
 
     struct stat st;
-    if (stat(sourceDirectory, &st) != 0) {
-      printf("Error: Source directory does not exist\n");
-      return 1;
+    if (stat(sourceBase, &st) != 0) {
+      perror("Error: Source directory does not exist");
+      return EXIT_FAILURE;
     }
-    // First, move all files and create directories
-    printf("Moving files from %s to %s\n", sourceDirectory,
-           destinationDirectory);
-    int result = nftw(sourceDirectory, moveFileCallback, 20, flag);
+    if (!S_ISDIR(st.st_mode)) {
+      fprintf(stderr, "Error: Source must be a directory\n");
+      return EXIT_FAILURE;
+    }
+
+    printf("Copying from %s to %s...\n", sourceBase, destinationDirectory);
+    result = nftw(sourceBase, copyFileCallback, 20, flag);
+    if (result != 0) {
+      perror("Error during copy operation");
+      return EXIT_FAILURE;
+    }
+    printf("Copy operation completed successfully\n");
+    return EXIT_SUCCESS;
+  }
+
+  // Move directory
+  if (TREEWALK_MOVEDIR(userArg)) {
+    if (argc < 5) {
+      fprintf(stderr, "Usage: dtree -mv <source> <destination>\n");
+      return EXIT_FAILURE;
+    }
+
+    sourceBase = argv[3];
+    destinationDirectory = argv[4];
+
+    struct stat st;
+    if (stat(sourceBase, &st) != 0) {
+      perror("Error: Source directory does not exist");
+      return EXIT_FAILURE;
+    }
+    if (!S_ISDIR(st.st_mode)) {
+      fprintf(stderr, "Error: Source must be a directory\n");
+      return EXIT_FAILURE;
+    }
+
+    printf("Moving files from %s to %s...\n", sourceBase, destinationDirectory);
+    result = nftw(sourceBase, moveFileCallback, 20, flag);
     if (result != 0) {
       perror("Error during move operation");
-      return 1;
+      return EXIT_FAILURE;
     }
 
-    // Then, delete the source directories (in reverse order)
     printf("Cleaning up source directories...\n");
-    result = nftw(sourceDirectory, deleteDirectoryCallback, 20,
-                  flag | FTW_DEPTH); // FTW_DEPTH for post-order traversal
+    result = nftw(sourceBase, deleteDirectoryCallback, 20, flag | FTW_DEPTH);
     if (result != 0) {
       perror("Error during cleanup");
-      return 1;
+      return EXIT_FAILURE;
     }
 
     printf("Move operation completed successfully\n");
-    return 0;
+    return EXIT_SUCCESS;
   }
 
+  // Delete files by extension
   if (TREEWALK_DELFILEEXT(userArg)) {
-    if (argc < 4) {
-      printf("Usage: dtree -del <directory> <file_extension>\n");
-      return 1;
+    if (argc < 5) {
+      fprintf(stderr, "Usage: dtree -del <directory> <extension>\n");
+      return EXIT_FAILURE;
     }
 
-    const char *rootDirectory = argv[3];
     targetExtension = argv[4];
+    if (targetExtension[0] != '.') {
+      fprintf(stderr, "Error: Extension must start with '.'\n");
+      return EXIT_FAILURE;
+    }
 
     struct stat st;
-    if (stat(rootDirectory, &st) != 0) {
-      printf("Error: Directory does not exist\n");
-      return 1;
+    if (stat(directory, &st) != 0) {
+      perror("Error: Directory does not exist");
+      return EXIT_FAILURE;
+    }
+    if (!S_ISDIR(st.st_mode)) {
+      fprintf(stderr, "Error: Path must be a directory\n");
+      return EXIT_FAILURE;
     }
 
-    if (targetExtension[0] != '.') {
-      printf("Extention must start with a '.'");
-      return 1;
-    }
-
-    printf("Deleting all %s files in %s and its subdirectories...\n",
-           targetExtension, rootDirectory);
-
-    int result = nftw(rootDirectory, deleteFileCallback, 20, flag);
+    printf("Deleting all %s files in %s...\n", targetExtension, directory);
+    result = nftw(directory, deleteFileCallback, 20, flag);
     if (result != 0) {
       perror("Error during delete operation");
-      return 1;
+      return EXIT_FAILURE;
     }
 
-    printf("Delete operation completed\n");
-    return 0;
+    printf("Delete operation completed successfully\n");
+    return EXIT_SUCCESS;
   }
+
+  fprintf(stderr, "Error: Unknown command '%s'\n", userArg);
+  return EXIT_FAILURE;
 }
