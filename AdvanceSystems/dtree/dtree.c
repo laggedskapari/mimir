@@ -227,6 +227,21 @@ static int deleteDirectoryCallback(const char *filePath, const struct stat *sb,
   return 0;
 }
 
+static int deleteFileCallback(const char *filePath, const struct stat *sb,
+                              int typeFlag, struct FTW *buff) {
+  if (typeFlag == FTW_F) {
+    if (fileHasExtention(filePath)) {
+      printf("Deleting: %s\n", filePath);
+      if (unlink(filePath) == 0) {
+        printf("Successfully deleted: %s\n", filePath);
+      } else {
+        perror("Error deleting file");
+      }
+    }
+  }
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
   int flag = FTW_PHYS;
   if (argc < 2) {
@@ -409,6 +424,39 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Move operation completed successfully\n");
+    return 0;
+  }
+
+  if (TREEWALK_DELFILEEXT(userArg)) {
+    if (argc < 4) {
+      printf("Usage: dtree -del <directory> <file_extension>\n");
+      return 1;
+    }
+
+    const char *rootDirectory = argv[3];
+    targetExtension = argv[4];
+
+    struct stat st;
+    if (stat(rootDirectory, &st) != 0) {
+      printf("Error: Directory does not exist\n");
+      return 1;
+    }
+
+    if (targetExtension[0] != '.') {
+      printf("Extention must start with a '.'");
+      return 1;
+    }
+
+    printf("Deleting all %s files in %s and its subdirectories...\n",
+           targetExtension, rootDirectory);
+
+    int result = nftw(rootDirectory, deleteFileCallback, 20, flag);
+    if (result != 0) {
+      perror("Error during delete operation");
+      return 1;
+    }
+
+    printf("Delete operation completed\n");
     return 0;
   }
 }
