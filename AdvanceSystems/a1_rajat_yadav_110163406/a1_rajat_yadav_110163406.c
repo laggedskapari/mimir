@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE 500
+#define _GNU_SOURCE
 #include <fcntl.h>
 #include <ftw.h>
 #include <libgen.h>
