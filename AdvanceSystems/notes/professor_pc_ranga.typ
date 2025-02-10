@@ -73,6 +73,8 @@
   - *>>* : output concatenation
 #set raw(
   theme: "Gruvbox-N.tmTheme",
+  block: true,
+  
 )
 
 ```zsh
