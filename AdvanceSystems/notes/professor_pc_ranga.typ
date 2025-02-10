@@ -82,3 +82,14 @@ $ ls -l > output.txt # output of ls is stored in output.txt
 $ sort < output.txt # content of output.txt goes into sort routine and gets sorted.
 $ echo $SHELL >> output.txt # append current shell to end of the output.txt file.
 ```
++ *Pipes*
+  - Its is a way to redirect output of a program to a input of another program.
+  ```shell
+  ls -l | grep .c | wc -w # ls gives all the file, then grep .c filter out all the C files and finally we get the word count.
+  ```
++ *Processes and Process IDs*
+  - an execution instance of a program is called a process.
+  - Some OS call them #emph[task].
+  - UNIX system guarantees that every process has a unique numeric identifier called Process ID. The process ID is a non -ve integer.
+  - Every process has a process ID, parent process ID and group ID.
+  - #emph[*NOTE*]: *swapper* and *sched* has a process ID of 0.
