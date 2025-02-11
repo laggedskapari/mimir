@@ -93,3 +93,47 @@ $ echo $SHELL >> output.txt # append current shell to end of the output.txt file
   - UNIX system guarantees that every process has a unique numeric identifier called Process ID. The process ID is a non -ve integer.
   - Every process has a process ID, parent process ID and group ID.
   - #emph[*NOTE*]: *swapper* and *sched* has a process ID of 0.
+
+== Lecture: 1
++ *Introduction*
+  - Pointers are crucial to C, and they are mainly used to:
+    + provide the way by which function can modify their calling arguments.
+    + Support dynamic allocation of memory.
+    + Refer to a large data structure in a simple manner.
+    + Support data structure like linked lists.
++ *Pointers are Addresses*
+  - A pointer is a variable whose value is a memory addresses.
+  - A pointer variable similar to other variables.
+  - A pointer variable store address of another variable.
+  - `base type *pointerName`
+  - *'\*'* - is used to dereference or declare a pointer.
+  - *&* - is used to access memory location.
++ *NULL*
+  - It used to indicate that pointer is not pointing to any valid data.
+  - *NULL* is defined in *`stdlib.h`*
+  - *NULL* is used to indicate a failure operation.
++ *Pointer Arithmetic*
+  - When a pointer is incremented (or decremented). It will points to memory location of next element of its base type.
+  - ```C ptr + 1 = 204 //ptr is int and int is 4 bytes```
++ *Pointers and Array*
+  - The name of the array is the address of the array's first element.
+  - e.g `int arr[3];` reserves 3 consecutive unit of memory, each block of size 4.
+  - Pointers and array are interchangeable.
+  - *Limitations of Pointer arithmetic*
+    + \*, / and % can't be used with pointers.
+    + 2 pointers *cannot* be added together.
+    + Only *integer offsets* can be added to or subtracted from a pointer.
+    + A pointer p1 can be subtracted from p2. The result is an integer, the number of elements between p1 and p2.
++ *Generic Pointers*
+  - A pointer variable defined as *void* is a generic pointer variable. (It can point to any type)
+  - *Advantage*: not type casting is required.
+  - You can't dereference a generic pointer.
++ *Dynamic Memory Allocation*
+  - *Static allocation*: a variable's memory is allocated and persists throughout the entire life of the program. This is the case of global variable.
+  - *Automatic allocation*: when a local variable are declared *inside a function*, the space for these variable is allocated when the function is called (starts) and is freed when the function terminates. This is also the case of parametric variables.
+  - *Dynamic allocation*: allow a program at the execution time to allocate memory *when needed* and free it when no longer needed.
+    + *Advantage*: it is often impossible to know, prior to the execution time, the size of memory needed in many cases. (e.g. The size of an array based on any size n)
+  - Most common used functions for managing dynamic memory are:
+    + *`void* malloc(int size)`*: to allocate a block (number of bytes) of memory of a given *size* and returns a pointer to this newly allocated block.
+    + *`void free(void *ptr)`*: to free previously allocated block of memory. 
++ *Dynamic Arrays*
