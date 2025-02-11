@@ -136,4 +136,82 @@ $ echo $SHELL >> output.txt # append current shell to end of the output.txt file
   - Most common used functions for managing dynamic memory are:
     + *`void* malloc(int size)`*: to allocate a block (number of bytes) of memory of a given *size* and returns a pointer to this newly allocated block.
     + *`void free(void *ptr)`*: to free previously allocated block of memory. 
-+ *Dynamic Arrays*
+  - #emph[*CODE*]
+```C
+#include <stdio.h>
+
+int main(void) {
+  int num = 100;
+  int *b;
+
+  b = &num;
+  printf("*b: %d\n", *b); // 100
+
+  int **c;
+  c = &b;
+  printf("**c: %d\n", **c); // 100
+
+  int ***d;
+  d = &c;
+  printf("***d: %d\n", ***d); // 100
+}
+
+
+
+#include <stdio.h>
+
+int main() {
+  int n1 = 10, n2;
+  int *ptr;
+
+  ptr = &n1;
+  n2 = *ptr;
+  printf("n1: %d  n2: %d  *ptr: %d\n", n1, n2,
+         *ptr); // n1: 10  n2: 10  *ptr: 10
+  return 0;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int *createArray(size_t size) {
+  int *ptr = malloc(sizeof(int));
+  if (ptr == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    return NULL;
+  }
+  return ptr;
+}
+
+int main() {
+  int *arr = createArray(1000);
+  if (arr == NULL) {
+    return 1;
+  }
+
+  free(arr);
+  return 0;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int *createArray(size_t size) {
+  int *ptr = malloc(sizeof(int));
+  if (ptr == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    return NULL;
+  }
+  return ptr;
+}
+
+int main() {
+  int *arr = createArray(1000);
+  if (arr == NULL) {
+    return 1;
+  }
+
+  free(arr);
+  return 0;
+}
+```
