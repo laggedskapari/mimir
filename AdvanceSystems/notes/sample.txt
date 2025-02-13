@@ -1,0 +1,5 @@
+total 48
+-rw-r--r--@ 1 0xskaper  staff  10189  9 Feb 20:56 Gruvbox-N.tmTheme
+drwxr-xr-x  6 0xskaper  staff    192 10 Feb 21:05 code
+-rw-r--r--  1 0xskaper  staff  10217 12 Feb 18:03 professor_pc_ranga.typ
+-rw-r--r--  1 0xskaper  staff      0 12 Feb 18:24 sample.txt

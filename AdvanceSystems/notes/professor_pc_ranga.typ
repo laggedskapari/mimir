@@ -45,7 +45,7 @@
     + Owner
     + Permissions 
     + Last Modification
-  - *`stat()`* in C returns all the information containing attributes of the file.
+  - []*`stat()`* in C returns all the information containing attributes of the file.
   - *Home directory* is denoted by `~` symbol.
 + *Filename* 
   - The only 2 characters that are forbidden in a filename are the '/' and the #underline[NULL] character.
@@ -215,3 +215,114 @@ int main() {
   return 0;
 }
 ```
+
+== Lecture 2
++ *File IOs*
+  - File descriptors are used by kernel to address a open file. *(NON -VE)*
+  - *1, 2 and 3* are reserved and are assigned to standard IO and error.
+  - UNIX has declared the reserved one with a symbolic constant, defined in `<unistd.h>` for these values are:
+    + *STDIN_FILENO*: Standart Input - 0
+    + *STDOUT_FILENO*: Standard Output - 1
+    + *STDERR_FILENO*: Standard Error - 2
+  - User processes can only get file descriptors > 2.
+  - File descriptor range from 0 through `OPEN_MAX` (a symbolic constant i.e defined by the OS).
+  - They are unbuffered cause they come under system calls.
+
++ *`open()`*
+  - File is created and open by it. (Created only when file doesn't alreadt exists)
+  - *Function*:
+  - ```C
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+int open(const char *pathname, int oflag, mode_t mode);
+```
+  - *`pathname`*: absolute or relative.
+  - *`oflag`*: formed by bitwise OR `|` constants. (e.g. O_RDONLY, O_WRONLY, etc)
+  - *`mode_t`*: only used when creating file.
+  - When creating a file, `mode_t` goes through a default umask (#emph[file permisson = asked file permission - umask]). (e.g. 0777 - 0022 = 0755)
+  - 
+
++ *`read()`*
+  - Data is read from an open file.
+  - *Function*
+```C
+#include<unistd.h>
+ssize_t read(int filedes, void *buff, size_t nbytes);
+```
+  - *`filedes`*: file descriptor.
+  - *`*buff\`* : buffer to store output.
+  - *`size_t`* : size of the output.
+  - returns: number of bytes read, 0 if end of file, -1 on error.
+  - also read the UTF character.
++ *`write()`*
+  - Data is written to an open file with write function.
+  - *Function*:
+```C
+#include<unistd.h>
+
+ssize_t write(int filedes, const void *buff, size_t nbytes)
+```
++ *`close()`*
+  - free the file descriptor.
+  - returns 0 when OK and -1 otherwise. (e.g. -1 if already closed and try to close again)
++  *`lseek()`*
+  - It is used to change the file offset.
+  - *Function*: 
+```C
+#include<sys/types.h>
+#include<unistd.h>
+
+off_t lseek(int filedes, off_t offset, int whence);
+```
+  - returns new file offset if OK, -1 on error.
+  - by default it is intialized to 0, when a file is opened, unless O_APPEND is specified.
+  - *`SEEK_SET`*: offset is set to #emph[offset] bytes from the beginning of the file.
+  - *`SEEK_CUR`*: offset is set to current value + #emph[offset]. (#emph[offset] can be +ve and -ve)
+  - *`SEEK_END`*: offset is set to the size of the file plus the #emph[offset]. (The #emph[offset] can be +ve or -ve)
+  - *#emph[NOTE]*: UTF characters are included and have a size of 8 bits. (UTF character is can also be changed to \n)
+
+== Lecture 3
++ *Unix Process*
+  - Unix is a multi-user and multitasking OS.
+  - Users can run their programs concurrently and shared hardware resources.
+  - An *user can run multiple programs* and task concurrently.
+  - It appears that execution is done in parallel, however in reality OS switches between mutliple users and process rapidly in an interleaved manner.
+  - *Unix Processes*:
+    + Any routine is a process.
+    + ex.c (Program) > ex (executable) > ./ex (process).
+  - Every process in UNIX has: 
+    + PID
+    + Some code
+    + Some data
+    + Stack
+    + env
+  - Unix start as a single process, called *init*, and it has a PID 1.
+  - The only way to create a new process in Unix, is to duplicate an existing one.
+  - The process init is the ancestor of all subsequent processes.
+  - Process *init* never dies.
+  - The *spawning* of new process is done with 2 *system calls*.
+    + *`fork()`*: duplicated the called process.
+    + *`exex()`*: replaces the called process by a new one.
+#image("Screenshot 2025-02-12 at 9.00.30 PM.png", width: 100%, height: 50%)
++ *`fork()`*
+  - It is used to create new child process.
+  - *Function*:
+```C
+#include<sys/types.h>
+#include<unistd.h>
+
+pid_t fork(void);
+```
+  - returns 0 in child, PID of child in parent, -1 on error.
+  - is called *once*, but returns *twice*.
+  - The reason for returning 0 in child because child can do `getppid();` to get parent PID;
+  - The reason for returning child PID in parent because child can have more `fork();` to create more child.
+  - File descriptors are inherited, therefore *parent* and *child* have same file descriptors.
+  - *`fork();`* performs in cocurrency.
+  - Execution resumes at the line after the `fork()` statement in both *parent* and *child*.
+  - *Parent* and *Child* have different scope that means same variable can different values in execution.
+  - *Usage*:
+    + A process wants to execute another program.
+    + A program needs to execute subtask. (e.g. Server/sockets)
+  - $ "Total Process" = 2^n - 1 $
