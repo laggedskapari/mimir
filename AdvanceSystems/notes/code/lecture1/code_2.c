@@ -13,4 +13,7 @@ int main() {
   p -= 2;
   printf("\nAddress of p - 2: %p\n", p); // 0x16f597098
   return 0;
+
+  // This is hexadecimal representation of memory address so, a = 10, b = 11, c
+  // = 12, d = 13, e = 14, f = 15
 }

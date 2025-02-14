@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int main(void) {
+int main() {
   int num = 100;
   int *b;
 
@@ -14,4 +14,9 @@ int main(void) {
   int ***d;
   d = &c;
   printf("***d: %d\n", ***d); // 100
+
+  ***d = 300;
+  printf("num: %d\n", num); // 300 (cause of dereferencing)
+
+  return 0;
 }
